@@ -1,8 +1,13 @@
-.App {
-  text-align: center;
+.label {
+	font-size: 30px;
+	font-weight: 700;
 }
 
-.App-logo {
+.App {
+	/* text-align: center; */
+}
+
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -35,4 +40,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
