@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import { Card, Container, Button } from "react-bootstrap";
 import axios from "axios";
 
@@ -21,21 +21,29 @@ const reducer = (state, action) => {
 	}
 };
 
-export default function ReadEditDelete({ onEdit }) {
+export default function ReadEditDelete({ onEdit, refresh, setRefresh }) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	// const [todoData, setTodoData] = useState([]);
+	function todoList(id) {
+		axios
+			.get(`http://localhost:3001/API/todo-list/${id}`)
+			.then((res) => {
+				dispatch({ type: "SUCCESS", payload: res.data });
+				// setTodoData(res.data);
+			})
+			.catch((err) => {
+				dispatch({ type: "FAILURE" });
+				console.log(err);
+			});
+	}
 
-	axios
-		.get("http://localhost:3001/API/todo-list")
-		.then((res) => {
-			dispatch({ type: "SUCCESS", payload: res.data });
-			// setTodoData(res.data);
-		})
-		.catch((err) => {
-			dispatch({ type: "FAILURE" });
-			console.log(err);
-		});
+	useEffect(() => {
+		const user = JSON.parse(localStorage.getItem("user-data"));
+		if (user && user) {
+			todoList(user.id);
+		}
+	}, [refresh]);
 
 	function handleDelete(id) {
 		// e.preventDefault();
@@ -44,7 +52,7 @@ export default function ReadEditDelete({ onEdit }) {
 				id: id,
 			})
 			.then(function (res) {
-				console.log(res);
+				setRefresh((prev) => prev + 1);
 			})
 			.catch(function (err) {
 				console.log(err);

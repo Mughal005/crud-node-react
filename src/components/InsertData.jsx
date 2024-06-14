@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import axios from "axios";
 
-export default function InsertData({ updateItem, clearUpdate }) {
+export default function InsertData({ updateItem, clearUpdate, setRefresh }) {
 	const title = useRef("");
 	const body = useRef("");
 
@@ -12,6 +12,13 @@ export default function InsertData({ updateItem, clearUpdate }) {
 			body.current.value = updateItem.body;
 		}
 	}, [updateItem]);
+
+	useEffect(() => {
+		const user = JSON.parse(localStorage.getItem("user-data"));
+		setUserId(user);
+	}, []);
+
+	const [userId, setUserId] = useState();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -23,7 +30,7 @@ export default function InsertData({ updateItem, clearUpdate }) {
 					body: body.current.value,
 				})
 				.then((res) => {
-					console.log(res);
+					setRefresh((pre) => pre + 1);
 					clearUpdate();
 					title.current.value = "";
 					body.current.value = "";
@@ -36,9 +43,10 @@ export default function InsertData({ updateItem, clearUpdate }) {
 				.post("http://localhost:3001/API/add-todo", {
 					title: title.current.value,
 					body: body.current.value,
+					userid: userId.id,
 				})
 				.then((res) => {
-					console.log(res);
+					setRefresh((pre) => pre + 1);
 					title.current.value = "";
 					body.current.value = "";
 				})
@@ -50,10 +58,19 @@ export default function InsertData({ updateItem, clearUpdate }) {
 	return (
 		<>
 			<Container style={{ width: "40%" }}>
-				<Form className="my-4" onSubmit={handleSubmit}>
+				<Form
+					className="my-4"
+					onSubmit={handleSubmit}
+					// style={{ minHeight: "30px", maxHeight: "30px" }}
+				>
 					<Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
 						<Form.Label className="label">TITLE</Form.Label>
-						<Form.Control className="border-dark" type="text" ref={title} />
+						<Form.Control
+							className="border-dark"
+							type="text"
+							ref={title}
+							required
+						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
 						<Form.Label className="label">BODY</Form.Label>
@@ -62,6 +79,7 @@ export default function InsertData({ updateItem, clearUpdate }) {
 							as="textarea"
 							rows={3}
 							ref={body}
+							required
 						/>
 					</Form.Group>
 					<div className="d-flex justify-content-end">

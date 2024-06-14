@@ -1,0 +1,10 @@
+.dropdown-toggle::after {
+	margin-left: 0 !important;
+	border: 0 !important;
+	vertical-align: 0 !important;
+	content: none;
+}
+
+.btn-primary {
+	--bs-btn-border-color: #dad9d9 !important;
+}
